@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Performance Crew</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;ㄹ
+      --text: #e8e4dc;
+      --muted: #555;
+      --accent: #c8ff00;
+      --accent2: #ff3c00;
+      --white: #fafafa;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s, height 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor.grow { width: 40px; height: 40px; }
+
+    /* NOISE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    nav.scrolled {
+      border-color: var(--border);
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    #hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 80px 48px 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-layout {
+  display: flex;
+  align-items: flex-end;
+  gap: 64px;
+}
+
+.hero-image {
+  flex-shrink: 0;
+  width: 260px;
+  height: 380px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.3s ease forwards;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(20%) brightness(0.8);
+}
+
+.hero-content {
+  flex: 1;
+}
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(200,255,0,0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(255,60,0,0.06) 0%, transparent 60%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse { from { opacity: 0.6; } to { opacity: 1; } }
+
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s ease forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 13vw, 200px);
+      line-height: 0.88;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s ease forwards;
+    }
+.title-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+.title-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+padding-bottom: 8px; 
+}
+
+.title-en {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.7); 
+}
+
+.title-ko {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--white); 
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.title-row:hover .title-ko {
+  opacity: 1;
+  transform: translateY(0);
+}
+    .hero-title span { color: var(--accent); } 
+    .hero-sub {
+      margin-top: 40px;
+      display: flex;
+      gap: 48px;
+      align-items: flex-end;
+	justify-content: space-between;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s ease forwards;
+    }
+    .hero-desc { white-space: nowrap; font-size: 15px; line-height: 1.75; color: var(--muted); }
+    .hero-stats { display: flex; gap: 40px; flex-shrink: 0; }
+    .stat { text-align: right; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      line-height: 1;
+      color: var(--white);
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      position: absolute;
+      bottom: 64px; right: 48px;
+      display: flex; align-items: center; gap: 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      opacity: 0;
+      animation: fadeUp 1s 1.2s ease forwards;
+    }
+    .scroll-line::before {
+      content: '';
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--muted));
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SECTIONS */
+    section { padding: 120px 48px; }
+    .section-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 6vw, 88px);
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: var(--white);
+      margin-bottom: 64px;
+    }
+
+    /* ABOUT */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .about-text { font-size: 16px; line-height: 2; color: #999; }
+    .about-text p + p { margin-top: 1.5em; }
+    .skills-list { margin-top: 0px; }
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .skill-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: var(--white);
+    }
+    .skill-bar {
+      width: 160px;
+      height: 2px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--accent);
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* WORKS */
+    #works { border-top: 1px solid var(--border); }
+
+    /* 연도 블록 */
+    .year-block { margin-bottom: 64px; }
+    .year-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .year-label span {
+      color: var(--accent);
+      margin-right: 12px;
+    }
+
+    /* 가로 스크롤 그리드 */
+    .works-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 260px;
+      grid-template-rows: 390px;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 12px;
+      cursor: grab;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .works-row::-webkit-scrollbar { display: none; }
+    .works-row:active { cursor: grabbing; }
+
+    /* 카드 */
+    .work-card {
+      position: relative;
+      overflow: hidden;
+      width: 260px;
+      height: 390px;
+      background: var(--surface);
+      cursor: none;
+      flex-shrink: 0;
+    }
+    .work-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+      filter: grayscale(20%) brightness(0.7);
+    }
+    .work-card:hover .work-img {
+      transform: scale(1.06);
+      filter: grayscale(0%) brightness(0.85);
+    }
+    .work-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 40px 20px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 100%);
+      transform: translateY(6px);
+      transition: transform 0.4s ease;
+    }
+    .work-card:hover .work-info { transform: translateY(0); }
+    .work-cat {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .work-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .work-year {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+.work-card {
+  position: relative;
+}
+
+.card-links {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.work-card:hover .card-links {
+  opacity: 1;
+}
+
+.card-links a {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.6);
+  padding: 8px 16px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.card-links a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.card-dropdown {
+  position: relative;
+}
+
+.dropdown-btn {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.6);
+  padding: 8px 16px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.9);
+  border: 1px solid rgba(255,255,255,0.2);
+  min-width: 100px;
+  margin-top: 6px;
+  max-height: 160px;   /* 추가 */
+  overflow-y: auto;    /* 추가 */
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border: none !important;
+}
+
+.dropdown-menu a:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.card-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+    /* CONTACT */
+    #contact { border-top: 1px solid var(--border); }
+    .contact-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 48px;
+    }
+    .contact-left { flex: 1; }
+    .contact-big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 8vw, 120px);
+      line-height: 0.9;
+      color: var(--white);
+    }
+    .contact-big a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .contact-big a:hover { color: var(--accent); }
+    .contact-right { flex-shrink: 0; }
+    .contact-links { list-style: none; display: flex; flex-direction: column; gap: 16px; align-items: flex-end; }
+    .contact-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.2s;
+    }
+    .contact-links a:hover { color: var(--accent); }
+    .contact-links a::after {
+      content: '→';
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .contact-links a:hover::after { opacity: 1; transform: translateX(0); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--muted); }
+    .footer-back {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-back:hover { color: var(--accent); }
+
+    /* REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      #hero { padding: 80px 24px 56px; }
+      .hero-sub { flex-direction: column; gap: 32px; align-items: flex-start; }
+      .hero-stats { gap: 24px; }
+      section { padding: 80px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .contact-inner { flex-direction: column; align-items: flex-start; }
+      .contact-links { align-items: flex-start; }
+      footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+      .scroll-line { display: none; }
+      .works-row { grid-auto-columns: 200px; grid-template-rows: 300px; }
+      .work-card { width: 200px; height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-logo">YANG KYOUNGJIN</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-layout">
+      <div class="hero-image">
+        <img src="./images/111.jpg" alt="Yang Kyoungjin" />
+      </div>
+      <div class="hero-content">
+        <p class="hero-label">Performance Crew · 공연 스탭</p>
+        <h1 class="hero-title">
+          <div class="title-row">
+            <div class="title-letter">A.A.A</div>
+            <div class="title-sub">
+              <span class="title-en">ART. ASSEMBLE. AMPLIFY.</span>
+              <span class="title-ko">예술 · 조립/구성 · 증폭</span>
+            </div>
+          </div>
+          <div class="title-row">
+            <div class="title-letter">B.B.B</div>
+            <div class="title-sub">
+              <span class="title-en">BEHIND. BEFORE. BEYOND.</span>
+              <span class="title-ko">무대 뒤 · 준비 · 그 이상</span>
+            </div>
+          </div>
+          <div class="title-row">
+            <div class="title-letter">C.C.C</div>
+            <div class="title-sub">
+              <span class="title-en">CONNECT. COORDINATE. CUE.</span>
+              <span class="title-ko">연결 · 조율 · 큐</span>
+            </div>
+          </div>
+        </h1>
+        <div class="hero-sub">
+          <p class="hero-desc">
+            함께 완성하는 공연.<br>
+            안전한 기술적 토대 위에 예술적 상상력을 현실로 구현하는 무대 파트너.<br>
+            기초부터 탄탄하게 다져져 기술과 예술의 안전한 다리 역할.
+          </p>
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="stat-num">44</div>
+              <div class="stat-label">Shows</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">5</div>
+              <div class="stat-label">Years</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-line">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-tag reveal">About</p>
+    <h2 class="section-title reveal">WHO I AM</h2>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          연극을 기반으로 다양한 장르의 프로덕션을 5년간 함께해왔습니다.
+          뮤지컬, 연극, 국악극, 무용 등 — 규모와 형식을 가리지 않고
+          최선의 결과물을 만들어왔습니다.
+        </p>
+        <p>
+          저는 현장의 흐름을 빠르게 읽고, 팀과 호흡하며, 예상치 못한 상황에서도
+          침착하게 대응하는 것을 가장 중요하게 생각합니다.
+          좋은 공연은 보이지 않는 곳에서 시작됩니다.
+        </p>
+      </div>
+      <div class="skills-list reveal">
+        <div class="skill-item">
+          <span class="skill-name">무대 감독 (Stage Manager)</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:0" data-width="85%"></div></div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">조연출 (Assistant Director)</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:0" data-width="100%"></div></div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">음향 오퍼레이터 (Operator)</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:0" data-width="180%"></div></div>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">행정 (Administrative work)</span>
+          <div class="skill-bar"><div class="skill-fill" style="width:0" data-width="75%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKS -->
+  <section id="works">
+    <p class="section-tag reveal">Works</p>
+    <h2 class="section-title reveal">SELECTED PROJECTS</h2>
+
+    <!-- 2026 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2026</span> 7 Projects</div>
+      <div class="works-row">
+
+       <!-- 2026 -->
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 YTF Incubation.png" alt="incubation" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">YTF Incubation
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">젊은연극제집행위원회</span>
+    </div>
+    <div class="work-year">기술조감독</div>
+  </div>
+  <div class="card-links">
+    <a href="https://www.ytfest.com/209" target="_blank" rel="noopener">연극제정보</a>
+    <a href="https://drive.google.com/file/d/106_rThsap18R41K3RslOuS6SZPrTTPcm/view?usp=drive_link">공연기술리포트</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 반쪼가리 자작.jpg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (부산)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF289129" target="_blank" rel="noopener">공연정보</a>
+    <a href="https://news.jtbc.co.kr/article/NB12299242?influxDiv=NAVER">수상 결과</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 코뿔소.jpg" alt="코뿔소" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">코뿔소 (부산)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">조연출, 자막/음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/mob/db/pblprfrView.do?mt20Id=PF289122" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 반쪼가리 자작 부천.png" alt="반쪼가리 자작 부천" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (부천)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF286897" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 어둑시니 양평.jpg" alt="어둑시니 양평" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (양평)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF288355" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2026 H를 위하여.jpg" alt="H를 위하여" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">H를 위하여
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">행정</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF279255" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 신춘문예_항해사.jpeg" alt="신춘문예 페스티벌 - 항해사" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">신춘문예 - 항해사
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">(사)한국극작가협회</span>
+    </div>
+    <div class="work-year">조연출</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099?menuId=MNU_00099&mt20Id=PF286282" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card" style="position:relative;">
+  <img class="work-img" src="./images/2026 어둑시니 동탄.png" alt="어둑시니 동탄" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (동탄)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF281358" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+    <!-- 2025 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2025</span> 11 Projects</div>
+      <div class="works-row">
+
+        <div class="work-card">
+  <img class="work-img" src="./images/2025 H에게.jpg" alt="H에게" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">H에게
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">무대감독, 조연출</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/mob/db/pblprfrView.do?mt20Id=PF279255" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 어둑시니 광주.jpg" alt="어둑시니" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (광주)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/mob/db/pblprfrView.do?mt20Id=PF277005" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 안경밖.jpg" alt="안과 경계와 바깥" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">안과 경계와 바깥
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">극단 도움닫기</span>
+    </div>
+    <div class="work-year">무대감독</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF276311" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 고요한집.jpg" alt="고요한 집" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">고요한 집
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">행정</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF272794" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 거창 반쪼가리.jpeg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (거창)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF268493" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 대한민국연극제.jpg" alt="대한민국연극제 인천" />
+  <div class="work-info">
+    <div class="work-cat">Festival</div>
+    <div class="work-title">제43회 대한민국연극제
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">(사)한국연극협회</span>
+    </div>
+    <div class="work-year">사무국 · 제작지원팀 부팀장</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF269642" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 세종조 회례연 포스터.jpeg" alt="세종조 회례연" />
+  <div class="work-info">
+    <div class="work-cat">Gugak</div>
+    <div class="work-title">세종조 회례연
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">국립국악원</span>
+    </div>
+    <div class="work-year">조연출, 현장 무대 조감독</div>
+  </div>
+  <div class="card-links">
+    <a href="https://www.gugak.go.kr/site/program/performance/detail?menuid=001001001&performance_id=35297" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 어둑시니 종로.jpeg" alt="어둑시니 청라" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (종로)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF261513" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 어둑시니 청라.png" alt="어둑시니 청라" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (청라)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF263322" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2025 반쪼가리 자작 세종.jpg" alt="반쪼가리 자작 세종" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF260404" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<!-- 도란도란 - 드롭다운 -->
+<div class="work-card">
+  <img class="work-img" src="./images/2025 도란도란.jpg" alt="도란도란" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">도란도란 이야기 보따리
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">한국국학진흥원</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터/매니저</div>
+  </div>
+  <div class="card-links">
+    <div class="card-dropdown">
+      <button class="dropdown-btn">공연정보 ▾</button>
+      <div class="dropdown-menu">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF255071" target="_blank" rel="noopener">서울</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF255067" target="_blank" rel="noopener">광주</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF256097" target="_blank" rel="noopener">제주</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF255804" target="_blank" rel="noopener">대전</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF255860" target="_blank" rel="noopener">대구</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF255972" target="_blank" rel="noopener">세종</a>
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF256141" target="_blank" rel="noopener">부산</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+
+ 
+ 	<!-- 2024 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2024</span> 8 Projects</div>
+      <div class="works-row">
+
+       <div class="work-card">
+  <img class="work-img" src="./images/2024 마녀들.jpg" alt="마녀들" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">마녀들
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF253409" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 코뿔소 예당.jpg" alt="코뿔소" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">코뿔소
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">조연출, 무대감독</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF249400" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 로풍찬.jpg" alt="로풍찬 유랑극장" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">로풍찬 유랑극장
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF244548" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 반쪼가리 자작 통영.jpg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (통영)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 반쪼가리 강남.jpeg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (강남)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF241571" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 반쪼가리 예당.jpeg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (서울)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF241182" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 반쪼가리 강동.jpg" alt="반쪼가리 자작" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">반쪼가리 자작 (강동)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF239967" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+<div class="work-card">
+  <img class="work-img" src="./images/2024 어둑시니 세종.jpeg" alt="어둑시니" />
+  <div class="work-info">
+    <div class="work-cat">Theatre</div>
+    <div class="work-title">어둑시니 (세종)
+      <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">창작조직 성찬파</span>
+    </div>
+    <div class="work-year">조연출, 음향 오퍼레이터</div>
+  </div>
+  <div class="card-links">
+    <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF238730" target="_blank" rel="noopener">공연정보</a>
+  </div>
+</div>
+
+	</div>
+    </div>
+
+ 
+ 	<!-- 2023 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2023</span> 3 Projects</div>
+      <div class="works-row">
+
+        <div class="work-card">
+      <img class="work-img" src="./images/2023 베르나르다알바의집_부산포스터.jpeg" alt="베르나르다 알바의 집" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">베르나르다 알바의 집(부산)
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF224545" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2023 베르나르다 서울.jpeg" alt="베르나르다 알바의 집" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">베르나르다 알바의 집(서울)
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF220273" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+	<div class="work-card">
+          <img class="work-img" src="./images/2023 다락방.jpeg" alt="다락방" />
+          <div class="work-info">
+            <div class="work-cat">Theatre</div>
+            <div class="work-title">다락방
+              <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+            </div>
+            <div class="work-year">조연출</div>
+          </div>
+        </div>
+
+	</div>
+    </div>
+
+ 
+ 	<!-- 2022 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2022</span> 6 Projects</div>
+      <div class="works-row">
+
+        <div class="work-card">
+      <img class="work-img" src="./images/2022 비극의 연기론 포스터.jpg" alt="비극의 연기론" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">비극의 연기론
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">음향 오퍼레이터</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF201339" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2022유나_청공_포스터.jpeg" alt="유나를 구하라" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">유나를 구하라
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF198014" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2022_미래연극제_차차온_포스터_윤곽선_220915_그림파일.jpg" alt="차차온" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">차마,차가워질 수 없는 온도
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조명 오퍼레이터</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF198509" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2022 날개 포스터.jpeg" alt="날개" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">날개
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF195153" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2022 광장의 안티고네.png" alt="광장의 안티고네" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">광장의 안티고네
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF192732" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2022 후산부 동구씨 거창.jpeg" alt="후산부 동구씨" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">후산부 동구씨 (거창)
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.kift.or.kr/bbs/board.php?bo_table=theater&wr_id=99" target="_blank" rel="noopener">공연정보</a>
+        <a href="https://www.fnnews.com/news/202208061107058387" target="_blank" rel="noopener">수상결과</a>
+      </div>
+    </div>
+
+
+</div>
+    </div>
+
+<!-- 2021 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2021</span> 5 Projects</div>
+      <div class="works-row">
+
+        <div class="work-card">
+      <img class="work-img" src="./images/2021 유나를 구하라.jpeg" alt="유나를 구하라" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">유나를 구하라
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF183367" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2021모든건타이밍_포스터_작업파일_1107_1.jpg" alt="모든건 타이밍" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">모든건 타이밍
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF183234" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2021 어른자격증.jpeg" alt="어른자격증" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">어른자격증
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.newsfreezone.co.kr/news/articleView.html?idxno=340324" target="_blank" rel="noopener">공연기사</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2021 차차온_베톤.jpeg" alt="차차온" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">차마, 차가워질 수 없는 온도
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF181881" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2021 한여름밤의 꿈.png" alt="한여름밤의 꿈" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">한여름밤의 꿈
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">서울시극단</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://kopis.or.kr/por/db/pblprfr/pblprfrView.do?menuId=MNU_00099&mt20Id=PF173838" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+</div>
+    </div>
+
+<!-- 2020 -->
+    <div class="year-block reveal">
+      <div class="year-label"><span>2020</span> 4 Projects</div>
+      <div class="works-row">
+
+<div class="work-card">
+      <img class="work-img" src="./images/2020 남으로 살겠습니다.jpg" alt="남으로 살겠습니다." />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">남으로 살겠습니다
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.mfac.or.kr/performance/whole_view.jsp?sc_b_category=17&sc_b_code=BOARD_1207683401&sc_year=2020-08-03&pk_seq=1913&page=1" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2020 임파티언스.jpeg" alt="임파티언스" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">임파티언스
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.euljispace.com/post/%EC%9D%84%EC%A7%80%EA%B3%B5%EA%B0%84-%EA%B0%80%EC%9D%84-%EB%8B%A8%EB%A7%89%EA%B7%B9%EC%A0%9C-%EA%B3%B5%EC%A1%B4" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2020 밤우주.jpg" alt="밤이면 나는 우주로 간다" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">밤이면 나는 우주로 간다
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.mfac.or.kr/performance/whole_view.jsp?sc_b_code=BOARD_1207683401&sc_year=2020-07-30&sc_hall_code=1,2,99&pk_seq=1901&sc_b_category=17&page=1" target="_blank" rel="noopener">공연정보</a>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <img class="work-img" src="./images/2020 피투성이.jpg" alt="안녕, 피투성이 벌레들아" />
+      <div class="work-info">
+        <div class="work-cat">Theatre</div>
+        <div class="work-title">안녕, 피투성이 벌레들아
+          <span style="display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:300; letter-spacing:0.1em; color:rgba(255,255,255,0.5); margin-top:4px;">공상집단 뚱딴지</span>
+        </div>
+        <div class="work-year">조연출</div>
+      </div>
+      <div class="card-links">
+        <a href="https://www.newsfreezone.co.kr/news/articleView.html?idxno=233771" target="_blank" rel="noopener">공연기사</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-tag reveal">Contact</p>
+    <div class="contact-inner reveal">
+      <div class="contact-left">
+        <h2 class="contact-big">
+          LET'S<br>WORK<br>
+          <a href="mailto:ykj8384@gmail.com">TOGETHER.</a>
+        </h2>
+      </div>
+      <div class="contact-right">
+        <ul class="contact-links">
+          <li><a href="mailto:ykj8384@gmail.com">ykj8384@gmail.com</a></li>
+          <li><a href="tel:010-3276-8384">010-3276-8384</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-copy">© 2026 YANG KYOUNGJIN— All rights reserved</span>
+    <a class="footer-back" href="#hero">Back to top ↑</a>
+  </footer>
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, .work-card, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+    });
+
+    // NAV SCROLL
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // REVEAL ON SCROLL
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.style.transitionDelay = (i % 3) * 0.1 + 's';
+          entry.target.classList.add('visible');
+          entry.target.querySelectorAll('.skill-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width;
+          });
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // 가로 스크롤 드래그
+    document.querySelectorAll('.works-row').forEach(row => {
+      let isDown = false, startX, scrollLeft;
+      row.addEventListener('mousedown', e => {
+        isDown = true;
+        startX = e.pageX - row.offsetLeft;
+        scrollLeft = row.scrollLeft;
+      });
+      row.addEventListener('mouseleave', () => isDown = false);
+      row.addEventListener('mouseup', () => isDown = false);
+      row.addEventListener('mousemove', e => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - row.offsetLeft;
+        row.scrollLeft = scrollLeft - (x - startX) * 1.5;
+      });
+    });
+  </script>
+</body>
+</html>
